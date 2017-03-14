@@ -1,5 +1,6 @@
 #!groovy
 pipeline {
+	agent any
 	environment {
 		CF_CREDS = credentials('xunrong_BM_CRED')
 		CF_API = 'https://api.stage1.ng.bluemix.net'
@@ -26,6 +27,7 @@ pipeline {
             post {
                 always {
                     // junit '**/target/*.xml'
+                    sh 'Test completed'
                 }
             }
         }
@@ -50,7 +52,7 @@ pipeline {
             }
         }
         stage('Deploy to Prod') {
-        	when { currentBuild.result == 'SUCCESS' }
+
 	        steps {
 	            sh 'echo "Deploy to Prod"'
 	        }
