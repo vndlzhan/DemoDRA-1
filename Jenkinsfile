@@ -22,7 +22,7 @@ pipeline {
         }
         stage('Unit Test and Code Coverage') {
             steps {
-                sh 'grunt dev-setup --no-color'
+                sh 'grunt fvt-test --no-color -f'
             }
             post {
                 always {
@@ -52,7 +52,6 @@ pipeline {
             }
         }
         stage('Deploy to Prod') {
-
 	        steps {
 	            sh 'echo "Deploy to Prod"'
 	        }
