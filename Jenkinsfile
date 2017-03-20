@@ -13,7 +13,9 @@ pipeline {
 	}
     stages {
         stage('Build') {
-        	def GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+        	environment {
+        		GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+        	}
             steps {
                 checkout scm
 
@@ -21,7 +23,6 @@ pipeline {
             	sh 'npm install'
             	sh 'grunt dev-setup --no-color'
             }
-            currentBuild.result = 'SUCCESS'
             post {
             	always {
             		publishBuild gitBranch: "master", gitCommit: "${GIT_COMMIT}", gitRepo: "https://github.com/xunrongl/DemoDRA-1", result:"${currentBuild.result}"
