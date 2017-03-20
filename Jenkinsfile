@@ -13,10 +13,11 @@ pipeline {
 	}
     stages {
         stage('Build') {
-        	def GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+
             steps {
                 checkout scm
                 try {
+                	def GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
                 	sh 'npm --version'
                 	sh 'npm install'
                 	sh 'grunt dev-setup --no-color'
