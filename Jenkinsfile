@@ -29,7 +29,7 @@ pipeline {
             }
             post {
             	always {
-            		publishBuild gitBranch: "master", gitCommit: "${GIT_COMMIT}", gitRepo: "https://github.com/xunrongl/DemoDRA-1" result:"${currentBuild.result}"
+            		publishBuild gitBranch: "master", gitCommit: "${GIT_COMMIT}", gitRepo: "https://github.com/xunrongl/DemoDRA-1", result:"${currentBuild.result}"
             	}
             }
         }
