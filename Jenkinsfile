@@ -13,9 +13,9 @@ pipeline {
 	}
     stages {
         stage('Build') {
+        	def GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
             steps {
                 checkout scm
-                def GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
                 try {
                 	sh 'npm --version'
                 	sh 'npm install'
