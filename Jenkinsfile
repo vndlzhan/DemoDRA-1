@@ -2,11 +2,11 @@
 pipeline {
 	agent any
 	environment {
-		CF_CREDS = credentials('xunrong_BM_CRED')
-		CF_API = 'https://api.stage1.ng.bluemix.net'
-		CF_ORG = 'lix@us.ibm.com'
-		CF_SPACE = 'staging'
-		CF_APP = 'Weather-V1-Xunrong'
+		IBM_CLOUD_DEVOPS_CREDS = credentials('xunrong_BM_CRED')
+		IBM_CLOUD_DEVOPS_ORG = 'lix@us.ibm.com'
+		IBM_CLOUD_DEVOPS_APP_NAME = 'Weather-V1-Xunrong'
+		IBM_CLOUD_DEVOPS_TOOLCHAIN_ID = '1320cec1-daaa-4b63-bf06-7001364865d2'
+		IBM_CLOUD_DEVOPS_WEBHOOK_URL = ''
 	}
 	tools {
 		nodejs 'recent'
@@ -15,9 +15,22 @@ pipeline {
         stage('Build') {
             steps {
                 checkout scm
-                sh 'npm --version'
-                sh 'npm install'
-                sh 'grunt dev-setup --no-color '
+                def GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+                try {
+                	sh 'npm --version'
+                	sh 'npm install'
+                	sh 'grunt dev-setup --no-color'
+                	currentBuild.result = 'SUCCESS'
+                }
+                catch(Exception e) {
+                	echo "build failed"
+                	currentBuild.result = 'FAILURE'
+                }
+            }
+            post {
+            	always {
+            		publishBuild gitBranch: "master", gitCommit: "${GIT_COMMIT}", gitRepo: "https://github.com/xunrongl/DemoDRA-1" result:"${currentBuild.result}"
+            	}
             }
         }
         stage('Unit Test and Code Coverage') {
