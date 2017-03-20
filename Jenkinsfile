@@ -16,17 +16,11 @@ pipeline {
 
             steps {
                 checkout scm
-                try {
-                	def GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-                	sh 'npm --version'
-                	sh 'npm install'
-                	sh 'grunt dev-setup --no-color'
-                	currentBuild.result = 'SUCCESS'
-                }
-                catch(Exception e) {
-                	echo "build failed"
-                	currentBuild.result = 'FAILURE'
-                }
+            	def GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+            	sh 'npm --version'
+            	sh 'npm install'
+            	sh 'grunt dev-setup --no-color'
+            	currentBuild.result = 'SUCCESS'
             }
             post {
             	always {
