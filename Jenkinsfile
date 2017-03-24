@@ -16,6 +16,7 @@ pipeline {
         stage('Build') {
             environment {
                 GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+                GIT_MASTER = 'master'
             }
             steps {
                 checkout scm
@@ -26,7 +27,10 @@ pipeline {
             }
             post {
                 success {
-                    publishBuildRecord gitBranch: "master", gitCommit: "${GIT_COMMIT}", gitRepo: "https://github.com/xunrongl/DemoDRA-1", result:"SUCCESS"
+                    publishBuildRecord gitBranch: "${GIT_MASTER}", gitCommit: "${GIT_COMMIT}", gitRepo: "https://github.com/xunrongl/DemoDRA-1", result:"SUCCESS"
+                }
+                failure {
+                	publishBuildRecord gitBranch: "${GIT_MASTER}", gitCommit: "${GIT_COMMIT}", gitRepo: "https://github.com/xunrongl/DemoDRA-1", result:"FAILED"
                 }
             }
         }
@@ -63,6 +67,9 @@ pipeline {
                 success {
                     publishDeployRecord environment: "STAGING", appUrl: "http://staging-${IBM_CLOUD_DEVOPS_APP_NAME}.mybluemix.net", result:"SUCCESS"
                 }
+                failure {
+                    publishDeployRecord environment: "STAGING", appUrl: "http://staging-${IBM_CLOUD_DEVOPS_APP_NAME}.mybluemix.net", result:"FAILED"
+                }
             }
         }
         stage('FVT') {
@@ -75,7 +82,6 @@ pipeline {
             post {
                 always {
                     publishTestResult type:'fvt', fileLocation: './mochafvt.json', environment: 'STAGING'
-
                 }
             }
         }
@@ -101,6 +107,14 @@ pipeline {
                         cf push $CF_APP_NAME -n $CF_APP_NAME -m 64M -i 1
                         export APP_URL=http://$(cf app $CF_APP_NAME | grep urls: | awk '{print $2}')
                     '''
+            }
+            post {
+                success {
+                    publishDeployRecord environment: "PRODUCTION", appUrl: "http://prod-${IBM_CLOUD_DEVOPS_APP_NAME}.mybluemix.net", result:"SUCCESS"
+                }
+                failure {
+                    publishDeployRecord environment: "PRODUCTION", appUrl: "http://prod-${IBM_CLOUD_DEVOPS_APP_NAME}.mybluemix.net", result:"FAILED"
+                }
             }
         }
     }
