@@ -7,6 +7,7 @@ pipeline {
         IBM_CLOUD_DEVOPS_APP_NAME = 'Weather-V1-Xunrong'
         IBM_CLOUD_DEVOPS_TOOLCHAIN_ID = '1320cec1-daaa-4b63-bf06-7001364865d2'
         IBM_CLOUD_DEVOPS_WEBHOOK_URL = ''
+        CF_SPACE='staging'
     }
     tools {
         nodejs 'recent'
@@ -46,10 +47,10 @@ pipeline {
                 sh '''
                         echo "CF Login..."
                         cf api $CF_API
-                        cf login -u $CF_CREDS_USR -p $CF_CREDS_PSW -o $CF_ORG -s $CF_SPACE
+                        cf login -u $IBM_CLOUD_DEVOPS_CREDS_USR -p $IBM_CLOUD_DEVOPS_CREDS_PSW -o $IBM_CLOUD_DEVOPS_ORG -s $CF_SPACE
 
                         echo "Deploying...."
-                        export CF_APP_NAME="staging-$CF_APP"
+                        export CF_APP_NAME="staging-$IBM_CLOUD_DEVOPS_APP_NAME"
                         cf delete $CF_APP_NAME -f
                         cf push $CF_APP_NAME -n $CF_APP_NAME -m 64M -i 1
                         export APP_URL=http://$(cf app $CF_APP_NAME | grep urls: | awk "{print $2}")
@@ -57,7 +58,7 @@ pipeline {
             }
             post {
                 success {
-                    publishDeployRecord environment: "STAGING", appUrl: "google.com", result:"SUCCESS"
+                    publishDeployRecord environment: "STAGING", appUrl: "${APP_URL}", result:"SUCCESS"
                 }
             }
         }
