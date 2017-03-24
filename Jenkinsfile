@@ -24,19 +24,19 @@ pipeline {
             	sh 'grunt dev-setup --no-color'
             }
             post {
-            	always {
-            		publishBuild gitBranch: "master", gitCommit: "${GIT_COMMIT}", gitRepo: "https://github.com/xunrongl/DemoDRA-1", result:"${currentBuild.result}"
+            	success {
+            		publishBuildRecord gitBranch: "master", gitCommit: "${GIT_COMMIT}", gitRepo: "https://github.com/xunrongl/DemoDRA-1", result:"SUCCESS"
             	}
             }
         }
         stage('Unit Test and Code Coverage') {
             steps {
-                sh 'grunt fvt-test --no-color -f'
+                sh 'grunt dev-test-cov --no-color -f'
             }
             post {
                 always {
-                    // junit '**/target/*.xml'
-                    sh 'Test completed'
+                    publishTestResult type:'unittest', fileLocation: './mochatest.json'
+                    publishTestResult type:'code', fileLocation: './tests/coverage/reports/coverage-summary.json'
                 }
             }
         }
@@ -54,10 +54,25 @@ pipeline {
 						export APP_URL=http://$(cf app $CF_APP_NAME | grep urls: | awk "{print $2}")
 					'''
             }
+            post {
+            	success {
+            		publishDeployRecord environment: "STAGING", appUrl: "google.com", result:"SUCCESS"
+            	}
+            }
         }
         stage('FVT') {
             steps {
             	sh 'grunt fvt-test --no-color -f'
+            }
+            post {
+            	always {
+                    publishTestResult type:'fvt', fileLocation: './mochafvt.json', environment: 'STAGING'
+                }
+            }
+        }
+        stage('Gate') {
+            steps {
+                evaluateGate policy: 'Weather App Policy'
             }
         }
         stage('Deploy to Prod') {
