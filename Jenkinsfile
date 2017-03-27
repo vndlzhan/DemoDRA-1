@@ -6,7 +6,6 @@ pipeline {
         IBM_CLOUD_DEVOPS_ORG = 'lix@us.ibm.com'
         IBM_CLOUD_DEVOPS_APP_NAME = 'Weather-V1-Xunrong'
         IBM_CLOUD_DEVOPS_TOOLCHAIN_ID = '1320cec1-daaa-4b63-bf06-7001364865d2'
-        IBM_CLOUD_DEVOPS_WEBHOOK_URL = ''
         CF_API="https://api.ng.bluemix.net"
     }
     tools {
