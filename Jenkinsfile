@@ -1,11 +1,21 @@
 #!groovy
+/*
+    This is an sample Jenkins file for the Weather App, which is a node.js application that has unit test, code coverage
+    and functional verification tests, deploy to staging and production environment and use IBM Cloud DevOps gate.
+    We use this as an example to use our plugin in the Jenkinsfile
+    Basically, you need to specify required 4 environment variables and then you will be able to use the 4 different methods
+    for the build/test/deploy stage and the gate
+ */
+
 pipeline {
     agent any
     environment {
+        // You need to specify 4 required environment variables first, they are going to be used for the following IBM Cloud DevOps steps
         IBM_CLOUD_DEVOPS_CREDS = credentials('xunrong_BM_CRED')
         IBM_CLOUD_DEVOPS_ORG = 'lix@us.ibm.com'
         IBM_CLOUD_DEVOPS_APP_NAME = 'Weather-V1-Xunrong'
         IBM_CLOUD_DEVOPS_TOOLCHAIN_ID = '1320cec1-daaa-4b63-bf06-7001364865d2'
+        
         CF_API="https://api.ng.bluemix.net"
     }
     tools {
@@ -26,6 +36,7 @@ pipeline {
             }
             post {
                 success {
+                    // post build section to use "publishBuildRecord" method to publish build record
                     publishBuildRecord gitBranch: "${GIT_BRANCH}", gitCommit: "${GIT_COMMIT}", gitRepo: "https://github.com/xunrongl/DemoDRA-1", result:"SUCCESS"
                 }
                 failure {
@@ -39,6 +50,7 @@ pipeline {
             }
             post {
                 always {
+                    // post build section to use "publishTestResult" method to publish test result
                     publishTestResult type:'unittest', fileLocation: './mochatest.json'
                     publishTestResult type:'code', fileLocation: './tests/coverage/reports/coverage-summary.json'
                 }
@@ -64,6 +76,7 @@ pipeline {
             }
             post {
                 success {
+                    // post build section to use "publishDeployRecord" method to publish deploy record
                     publishDeployRecord environment: "STAGING", appUrl: "http://staging-${IBM_CLOUD_DEVOPS_APP_NAME}.mybluemix.net", result:"SUCCESS"
                 }
                 failure {
@@ -80,12 +93,14 @@ pipeline {
             }
             post {
                 always {
+                    // post build section to use "publishTestResult" method to publish test result
                     publishTestResult type:'fvt', fileLocation: './mochafvt.json', environment: 'STAGING'
                 }
             }
         }
         stage('Gate') {
             steps {
+                // use "evaluateGate" method to leverage IBM Cloud DevOps gate
                 evaluateGate policy: 'Weather App Policy', forceDecision: 'true'
             }
         }
@@ -109,6 +124,7 @@ pipeline {
             }
             post {
                 success {
+                    // post build section to use "publishDeployRecord" method to publish deploy record
                     publishDeployRecord environment: "PRODUCTION", appUrl: "http://prod-${IBM_CLOUD_DEVOPS_APP_NAME}.mybluemix.net", result:"SUCCESS"
                 }
                 failure {
