@@ -6,6 +6,7 @@
     for the build/test/deploy stage and the gate
  */
 #!groovy
+
 pipeline {
     agent any
     environment {
@@ -32,6 +33,7 @@ pipeline {
             // post build section to use "publishBuildRecord" method to publish build record
             post {
                 success {
+                    // post build section to use "publishBuildRecord" method to publish build record
                     publishBuildRecord gitBranch: "${GIT_BRANCH}", gitCommit: "${GIT_COMMIT}", gitRepo: "https://github.com/xunrongl/DemoDRA-1", result:"SUCCESS"
                 }
                 failure {
@@ -46,6 +48,7 @@ pipeline {
             // post build section to use "publishTestResult" method to publish test result
             post {
                 always {
+                    // post build section to use "publishTestResult" method to publish test result
                     publishTestResult type:'unittest', fileLocation: './mochatest.json'
                     publishTestResult type:'code', fileLocation: './tests/coverage/reports/coverage-summary.json'
                 }
@@ -69,6 +72,7 @@ pipeline {
             // post build section to use "publishDeployRecord" method to publish deploy record
             post {
                 success {
+                    // post build section to use "publishDeployRecord" method to publish deploy record
                     publishDeployRecord environment: "STAGING", appUrl: "http://staging-${IBM_CLOUD_DEVOPS_APP_NAME}.mybluemix.net", result:"SUCCESS"
                 }
                 failure {
@@ -87,13 +91,14 @@ pipeline {
             // post build section to use "publishTestResult" method to publish test result
             post {
                 always {
+                    // post build section to use "publishTestResult" method to publish test result
                     publishTestResult type:'fvt', fileLocation: './mochafvt.json', environment: 'STAGING'
                 }
             }
         }
         stage('Gate') {
             steps {
-            	// use "evaluateGate" method to leverage IBM Cloud DevOps gate
+                // use "evaluateGate" method to leverage IBM Cloud DevOps gate
                 evaluateGate policy: 'Weather App Policy', forceDecision: 'true'
             }
         }
@@ -115,6 +120,7 @@ pipeline {
             // post build section to use "publishDeployRecord" method to publish deploy record
             post {
                 success {
+                    // post build section to use "publishDeployRecord" method to publish deploy record
                     publishDeployRecord environment: "PRODUCTION", appUrl: "http://prod-${IBM_CLOUD_DEVOPS_APP_NAME}.mybluemix.net", result:"SUCCESS"
                 }
                 failure {
