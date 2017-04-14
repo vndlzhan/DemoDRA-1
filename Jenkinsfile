@@ -15,6 +15,7 @@ pipeline {
         IBM_CLOUD_DEVOPS_ORG = 'lix@us.ibm.com'
         IBM_CLOUD_DEVOPS_APP_NAME = 'Weather-V1-Xunrong'
         IBM_CLOUD_DEVOPS_TOOLCHAIN_ID = '1320cec1-daaa-4b63-bf06-7001364865d2'
+        IBM_CLOUD_DEVOPS_WEBHOOK_URL= 'https://jenkins:9dbd12e0-1ed0-4de3-8b0e-f760571f7ae9:7533af55-2b34-4bb8-b1cb-06c04c7b6cfc@devops-api.ng.bluemix.net/v1/toolint/messaging/webhook/publish'
     }
     tools {
         nodejs 'recent'
@@ -35,9 +36,11 @@ pipeline {
                 success {
                     // post build section to use "publishBuildRecord" method to publish build record
                     publishBuildRecord gitBranch: "${GIT_BRANCH}", gitCommit: "${GIT_COMMIT}", gitRepo: "https://github.com/xunrongl/DemoDRA-1", result:"SUCCESS"
+                    notifyOTC stageName: "Build", status: "SUCCESS"
                 }
                 failure {
                 	publishBuildRecord gitBranch: "${GIT_BRANCH}", gitCommit: "${GIT_COMMIT}", gitRepo: "https://github.com/xunrongl/DemoDRA-1", result:"FAIL"
+                	notifyOTC stageName: "Build", status: "FAILURE"
                 }
             }
         }
@@ -74,9 +77,11 @@ pipeline {
                 success {
                     // post build section to use "publishDeployRecord" method to publish deploy record
                     publishDeployRecord environment: "STAGING", appUrl: "http://staging-${IBM_CLOUD_DEVOPS_APP_NAME}.mybluemix.net", result:"SUCCESS"
+                    notifyOTC stageName: "Deploy to Staing", status: "SUCCESS"
                 }
                 failure {
                     publishDeployRecord environment: "STAGING", appUrl: "http://staging-${IBM_CLOUD_DEVOPS_APP_NAME}.mybluemix.net", result:"FAIL"
+                    notifyOTC stageName: "Deploy to Staging", status: "FAILURE"
                 }
             }
         }
@@ -122,9 +127,11 @@ pipeline {
                 success {
                     // post build section to use "publishDeployRecord" method to publish deploy record
                     publishDeployRecord environment: "PRODUCTION", appUrl: "http://prod-${IBM_CLOUD_DEVOPS_APP_NAME}.mybluemix.net", result:"SUCCESS"
+                    notifyOTC stageName: "Deploy to prod", status: "SUCCESS"
                 }
                 failure {
                     publishDeployRecord environment: "PRODUCTION", appUrl: "http://prod-${IBM_CLOUD_DEVOPS_APP_NAME}.mybluemix.net", result:"FAIL"
+                    notifyOTC stageName: "Deploy to prod", status: "FAILURE"
                 }
             }
         }
