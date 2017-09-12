@@ -12,10 +12,11 @@ pipeline {
     environment {
     	// You need to specify 4 required environment variables first, they are going to be used for the following IBM Cloud DevOps steps
         IBM_CLOUD_DEVOPS_CREDS = credentials('xunrong_BM_CRED')
-        IBM_CLOUD_DEVOPS_ORG = 'lix@us.ibm.com'
+        IBM_CLOUD_DEVOPS_API_KEY = credentials('API_KEY') 
+        IBM_CLOUD_DEVOPS_ORG = 'vndlzhan@cn.ibm.com'
         IBM_CLOUD_DEVOPS_APP_NAME = 'Weather-V1-Xunrong'
-        IBM_CLOUD_DEVOPS_TOOLCHAIN_ID = '1320cec1-daaa-4b63-bf06-7001364865d2'
-        IBM_CLOUD_DEVOPS_WEBHOOK_URL= 'https://jenkins:9dbd12e0-1ed0-4de3-8b0e-f760571f7ae9:7533af55-2b34-4bb8-b1cb-06c04c7b6cfc@devops-api.ng.bluemix.net/v1/toolint/messaging/webhook/publish'
+        IBM_CLOUD_DEVOPS_TOOLCHAIN_ID = 'devopsinsights-toolchain-20170912090347380'
+        IBM_CLOUD_DEVOPS_WEBHOOK_URL= 'https://jenkins:be8ca57a-f16b-451f-8b85-385a50ecb5f8:09b090a8-9407-4f1a-b9ac-0cf82a94b151@devops-api-integration.stage1.ng.bluemix.net/v1/toolint/messaging/webhook/publish'
     }
     tools {
         nodejs 'recent'
